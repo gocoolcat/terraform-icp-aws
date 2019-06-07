@@ -7,7 +7,7 @@ shared: &shared
       - checkout
       - run: echo terraform init
       - run: echo terraform plan ${tfvarsfile}
-      - run: echo terraform apply ${tfvarsfile}
+      - run: if [[ "${tfvarsfile}" == "mysecondfile" ]]; then exit 1 ; fi
       - run: echo terraform destroy ${tfvarsfile}
 
 jobs:

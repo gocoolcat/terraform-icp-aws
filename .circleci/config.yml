@@ -1,70 +1,37 @@
-version: 2.1
+version: 2.0
 
-executors:
-  terraform:
+shared: &shared
     docker:
-      - image: hashicorp/terraform:0.11.14
-    working_directory: /tmp
+    - image: hashicorp/terraform:0.11.14
+    steps:
+      - checkout
+      - run: echo terraform init
+      - run: echo terraform plan ${tfvarsfile}
+      - run: echo terraform apply ${tfvarsfile}
+      - run: echo terraform destroy ${tfvarsfile}
 
 jobs:
-  plan:
-    executor: terraform
-    steps:
-      - run: mkdir -p workspace
-      - run: echo "Hello, world!" > workspace/echo-output
+  "ruby-2.2":
+    <<: *shared
+    environment:
+      - tfvarsfile: myfirstfile
 
-      # Persist the specified paths (workspace/echo-output) into the workspace for use in downstream job.
-      - persist_to_workspace:
-          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
-          # taken to be the root directory of the workspace.
-          root: workspace
-          # Must be relative path from root
-          paths:
-            - echo-output
+  "ruby-2.3":
+    <<: *shared
+    environment:
+      - tfvarsfile: mysecondfile
 
-  apply:
-    executor: terraform
-    steps:
-      - attach_workspace:
-          # Must be absolute path or relative path from working_directory
-          at: /tmp/workspace
 
-      - run: |
-          if [[ `cat /tmp/workspace/echo-output` == "Hello, world!" ]]; then
-            echo "It worked!";
-          else
-            echo "Nope!"; exit 1
-          fi
-  test:
-      executor: terraform
-      steps:
-        - run: echo testing stuff
+  "ruby-2.4":
+    <<: *shared
+    environment:
+      - tfvarsfile: mythirdfile
 
-  destroy:
-      executor: terraform
-      steps:
-        - run: destroying stuff
 
 workflows:
   version: 2
-
-  buildfirst:
+  build:
     jobs:
-      - plan
-      - apply:
-          requires:
-            - plan
-      - test:
-          requires:
-            - apply
-      - destroy
-  buildsecond:
-    jobs:
-      - plan
-      - apply:
-          requires:
-            - plan
-      - test:
-          requires:
-            - apply
-      - destroy
+      - "ruby-2.2"
+      - "ruby-2.3"
+      - "ruby-2.4"

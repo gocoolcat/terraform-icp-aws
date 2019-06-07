@@ -1,34 +1,74 @@
-version: 2
-jobs:
-  build:
+version: 2.1
+
+executors:
+  terraform:
     docker:
       - image: hashicorp/terraform:0.11.14
+    working_directory: /tmp
+
+jobs:
+  plan:
+    executor: terraform
     steps:
-      - checkout
-      - run:
-          name: Make backend
-          command: |
-            cat <<EOF > backend_override.tf
-              terraform {
-                  backend "s3" {
-                    bucket = "${tfstatebucket}"
-                    key    = "circledeployments/${CIRCLE_BUILD_NUM}"
-                    region = "${tfstateregion}"
-                  }
-                }
-            EOF
-      - run:
-          name: Terraform init
-          command: export MYVAR="my thing"
-      - run:
-          name: Plan ICP CE Ubuntu
-          command: echo "This is $MYVAR"
-      - run:
-          name: Deploy and destroy ICP CE Ubuntu
-          command: echo done
-      - run:
-          name: Plan ICP CE RHEL
-          command: lets fail
-      - run:
-          name: Deploy and destroy ICP CE RHEL
-          command: echo done
+      - run: mkdir -p workspace
+      - run: echo "Hello, world!" > workspace/echo-output
+
+      # Persist the specified paths (workspace/echo-output) into the workspace for use in downstream job.
+      - persist_to_workspace:
+          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
+          # taken to be the root directory of the workspace.
+          root: workspace
+          # Must be relative path from root
+          paths:
+            - echo-output
+
+  apply:
+    executor: terraform
+    steps:
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: /tmp/workspace
+
+      - run: |
+          if [[ `cat /tmp/workspace/echo-output` == "Hello, world!" ]]; then
+            echo "It worked!";
+          else
+            echo "Nope!"; exit 1
+          fi
+  test:
+      executor: terraform
+      steps:
+        - run: echo testing stuff
+
+  destroy:
+      executor: terraform
+      steps:
+        - run: destroying stuff
+
+workflows:
+  version: 2
+
+  buildfirst:
+    environment:
+      - tfvarsfile: "somerandomfile"
+    jobs:
+      - plan
+      - apply:
+          requires:
+            - plan
+      - test:
+          requires:
+            - apply
+      - destroy
+  buildsecond:
+    environment:
+      - tfvarsfile: "anotherfile"
+    jobs:
+      - plan
+      - apply:
+          requires:
+            - plan
+      - test:
+          requires:
+            - apply
+      - destroy

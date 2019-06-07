@@ -49,25 +49,31 @@ workflows:
   version: 2
 
   buildfirst:
-    environment:
-      - tfvarsfile: "somerandomfile"
     jobs:
       - plan
+          environment:
+            - tfvarsfile: "somerandomfile"
       - apply:
+          environment:
+            - tfvarsfile: "somerandomfile"
           requires:
             - plan
       - test:
           requires:
             - apply
       - destroy
+          environment:
+            - tfvarsfile: "somerandomfile"
   buildsecond:
-    environment:
-      - tfvarsfile: "anotherfile"
     jobs:
       - plan
+          environment:
+            - tfvarsfile: "anotherfile"
       - apply:
           requires:
             - plan
+          environment:
+            - tfvarsfile: "anotherfile"
       - test:
           requires:
             - apply

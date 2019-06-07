@@ -19,15 +19,16 @@ jobs:
             EOF
       - run:
           name: Terraform init
-          command: terraform init
+          command: export
       - run:
-          name: Plan
-          command: terraform plan -var-file=terraform-icp-ce-example.tfvars -out=mydeployment
+          name: Plan ICP CE Ubuntu
+          command: echo done
       - run:
-          name: Deploy and destroy
-          command: |
-            set +e
-            terraform apply mydeployment
-            aplyval=$?
-            terraform destroy -force
-            return ${aplyval}
+          name: Deploy and destroy ICP CE Ubuntu
+          command: echo done
+      - run:
+          name: Plan ICP CE RHEL
+          command: lets fail
+      - run:
+          name: Deploy and destroy ICP CE RHEL
+          command: echo done

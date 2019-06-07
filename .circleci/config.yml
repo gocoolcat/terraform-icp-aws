@@ -34,8 +34,8 @@ workflows:
     jobs:
       - ce-ubuntu
       - ce-rhel
-        requires:
-          - ce-ubuntu
+          requires:
+            - ce-ubuntu
       - ee-ubuntu
-        requires:
-          - ce-rhel
+          requires:
+            - ce-rhel

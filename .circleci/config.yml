@@ -11,18 +11,18 @@ shared: &shared
       - run: echo terraform destroy ${tfvarsfile}
 
 jobs:
-  ce-ubuntu:
+  ceubuntu:
     <<: *shared
     environment:
       - tfvarsfile: myfirstfile
 
-  ce-rhel:
+  cerhel:
     <<: *shared
     environment:
       - tfvarsfile: mysecondfile
 
 
-  ee-ubuntu:
+  eeubuntu:
     <<: *shared
     environment:
       - tfvarsfile: mythirdfile
@@ -32,10 +32,10 @@ workflows:
   version: 2
   build:
     jobs:
-      - ce-ubuntu
-      - ce-rhel
+      - ceubuntu
+      - cerhel
           requires:
-            - ce-ubuntu
-      - ee-ubuntu
+            - ceubuntu
+      - eeubuntu
           requires:
-            - ce-rhel
+            - cerhel

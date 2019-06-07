@@ -33,9 +33,9 @@ workflows:
   build:
     jobs:
       - ceubuntu
-      - cerhel
+      - cerhel:
           requires:
             - ceubuntu
-      - eeubuntu
+      - eeubuntu:
           requires:
             - cerhel

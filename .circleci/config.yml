@@ -19,7 +19,7 @@ jobs:
             EOF
       - run:
           name: Terraform init
-          command: export
+          command: lets fail here
       - run:
           name: Plan ICP CE Ubuntu
           command: echo done

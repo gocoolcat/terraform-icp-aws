@@ -11,18 +11,18 @@ shared: &shared
       - run: echo terraform destroy ${tfvarsfile}
 
 jobs:
-  "ruby-2.2":
+  ce-ubuntu:
     <<: *shared
     environment:
       - tfvarsfile: myfirstfile
 
-  "ruby-2.3":
+  ce-rhel:
     <<: *shared
     environment:
       - tfvarsfile: mysecondfile
 
 
-  "ruby-2.4":
+  ee-ubuntu:
     <<: *shared
     environment:
       - tfvarsfile: mythirdfile
@@ -32,10 +32,10 @@ workflows:
   version: 2
   build:
     jobs:
-      - "ruby-2.2"
-      - "ruby-2.3"
+      - ce-ubuntu
+      - ce-rhel
         requires:
-          - "ruby-2.2"
-      - "ruby-2.4"
+          - ce-ubuntu
+      - ee-ubuntu
         requires:
-          - "ruby-2.3"
+          - ce-rhel

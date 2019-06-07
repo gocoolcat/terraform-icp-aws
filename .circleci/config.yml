@@ -19,10 +19,10 @@ jobs:
             EOF
       - run:
           name: Terraform init
-          command: lets fail here
+          command: export MYVAR="my thing"
       - run:
           name: Plan ICP CE Ubuntu
-          command: echo done
+          command: echo "This is $MYVAR"
       - run:
           name: Deploy and destroy ICP CE Ubuntu
           command: echo done

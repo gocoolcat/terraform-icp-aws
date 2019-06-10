@@ -11,13 +11,13 @@ jobs:
       - run: echo "preinstall is << parameters.tfvarsfile >>"
       - checkout
       - run:
-          name: Make backend
+          name: Make backend for << parameters.tfvarsfile >>
           command: |
             cat \<<EOF > backend_override.tf
               terraform {
                   backend "s3" {
                     bucket = "${tfstatebucket}"
-                    key    = "circledeployments/${CIRCLE_BUILD_NUM}-<< parameters.tfvarsfile >>"
+                    key    = "circledeployments/${CIRCLE_BUILD_NUM}-<< parameters.tfvarsfile >>.tfstate"
                     region = "${tfstateregion}"
                   }
                 }

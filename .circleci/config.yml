@@ -8,11 +8,12 @@ jobs:
         type: string
         default: notspecified
     steps:
+      - run: echo "preinstall is << parameters.tfvarsfile >>"
       - checkout
       - run:
           name: Make backend
           command: |
-            cat <<EOF > backend_override.tf
+            cat \<<EOF > backend_override.tf
               terraform {
                   backend "s3" {
                     bucket = "${tfstatebucket}"
@@ -23,6 +24,7 @@ jobs:
             EOF
       - run: echo terraform init
       - run: echo "preinstall is << parameters.tfvarsfile >>"
+      - run: cat backend_override.tf
 workflows:
   workflow:
     jobs:

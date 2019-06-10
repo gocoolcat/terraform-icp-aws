@@ -17,7 +17,7 @@ jobs:
               terraform {
                   backend "s3" {
                     bucket = "${tfstatebucket}"
-                    key    = "circledeployments/${CIRCLE_BUILD_NUM}"
+                    key    = "circledeployments/${CIRCLE_BUILD_NUM}-<< parameters.tfvarsfile >>"
                     region = "${tfstateregion}"
                   }
                 }

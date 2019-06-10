@@ -21,7 +21,7 @@ jobs:
                   }
                 }
             EOF
-          echo terraform init
+      - run: echo terraform init
       - run: echo "preinstall is << parameters.tfvarsfile >>"
 workflows:
   workflow:

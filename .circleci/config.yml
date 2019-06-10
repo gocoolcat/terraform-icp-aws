@@ -8,7 +8,7 @@ jobs:
         type: string
         default: notspecified
     steps:
-      # - checkout
+      - checkout
       - run:
           name: Make backend for << parameters.tfvarsfile >>
           command: |
@@ -23,15 +23,15 @@ jobs:
             EOF
       - run: terraform init
       - run:
-        name: terraform plan
-        command: terraform plan -var-file=<< parameters.tfvarsfile >> -out=mybuild
+          name: terraform plan
+          command: terraform plan -var-file=<< parameters.tfvarsfile >> -out=mybuild
       - run:
-        name: terraform apply
-        command: terraform apply "mybuil"
+          name: terraform apply
+          command: terraform apply "mybuil"
       - run:
-        name: terraform destroy
-        command: terraform destroy -force
-        when: always
+          name: terraform destroy
+          command: terraform destroy -force
+          when: always
 workflows:
   workflow:
     jobs:

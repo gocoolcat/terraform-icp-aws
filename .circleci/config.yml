@@ -7,6 +7,11 @@ jobs:
       tfvarsfile:
         type: string
         default: notspecified
+    environment:
+      - TF_VAR_aws_region: eu-west-1
+      - tfstatebucket: circlecitfstate
+      - tfstatedir: circledeployments
+      - tfstateregion: us-east-2
     steps:
       - checkout
       - run:
@@ -16,7 +21,7 @@ jobs:
               terraform {
                   backend "s3" {
                     bucket = "${tfstatebucket}"
-                    key    = "circledeployments/${CIRCLE_BUILD_NUM}-<< parameters.tfvarsfile >>.tfstate"
+                    key    = "${tfstatedir}/${CIRCLE_BUILD_NUM}-<< parameters.tfvarsfile >>.tfstate"
                     region = "${tfstateregion}"
                   }
                 }

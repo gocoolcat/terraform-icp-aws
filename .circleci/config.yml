@@ -27,7 +27,7 @@ jobs:
           command: terraform plan -var-file=<< parameters.tfvarsfile >> -out=mybuild
       - run:
           name: terraform apply
-          command: terraform apply "mybuil"
+          command: terraform apply "mybuild"
       - run:
           name: terraform destroy
           command: terraform destroy -force
@@ -37,6 +37,8 @@ workflows:
     jobs:
       - build:
           tfvarsfile: terraform-icp-ce-example.tfvars
-      # - build:
-      #     tfvarsfile: terraform-icp-ce-example.tfvars
+      - build:
+          requires:
+            - build
+          tfvarsfile: terraform-icp-ce-example.tfvars
       # Repeated as many times as there are configurations...

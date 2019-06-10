@@ -8,7 +8,7 @@ jobs:
         type: string
         default: notspecified
     steps:
-      - checkout
+      # - checkout
       - run:
           name: Make backend for << parameters.tfvarsfile >>
           command: |

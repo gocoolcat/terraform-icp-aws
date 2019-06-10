@@ -1,41 +1,32 @@
 version: 2.1
-
-shared: &shared
+jobs:
+  build:
     docker:
-    - image: hashicorp/terraform:0.11.14
+      - image: hashicorp/terraform:0.11.14
+    parameters:
+      tfvarsfile:
+        type: string
+        default: notspecified
     steps:
       - checkout
-      - run: echo terraform init
-      - run: echo terraform plan ${tfvarsfile}
-      - run: if [[ "${tfvarsfile}" == "mysecondfile" ]]; then exit 1 ; fi
-      - run: echo terraform destroy ${tfvarsfile}
-
-jobs:
-  ce-ubuntu:
-    <<: *shared
-    environment:
-      - tfvarsfile: myfirstfile
-
-  ce-rhel:
-    <<: *shared
-    environment:
-      - tfvarsfile: mysecondfile
-
-
-  ee-ubuntu:
-    <<: *shared
-    environment:
-      - tfvarsfile: mythirdfile
-
-
+      - run:
+          name: Make backend
+          command: |
+            cat <<EOF > backend_override.tf
+              terraform {
+                  backend "s3" {
+                    bucket = "${tfstatebucket}"
+                    key    = "circledeployments/${CIRCLE_BUILD_NUM}-<< parameters.tfvarsfile >>"
+                    region = "${tfstateregion}"
+                  }
+                }
+            EOF
+          echo terraform init
+      - run: echo "preinstall is << parameters.tfvarsfile >>"
 workflows:
-  version: 2
-  build:
+  workflow:
     jobs:
-      - ce-ubuntu
-      - ce-rhel:
-          requires:
-            - ce-ubuntu
-      - ee-ubuntu:
-          requires:
-            - ce-rhel
+      - build:
+          tfvarsfile: some.tfvars
+      - build:
+          tfvarsfile: other.tfvars
